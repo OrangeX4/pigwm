@@ -16,7 +16,7 @@
 
 #pop.set-theme((
   "body-box-args": (
-    inset: 0.5em,
+    inset: 0.6em,
     width: 100%,
     stroke: 1.2pt + primary.lighten(60%),
     radius: 6pt,
@@ -24,7 +24,7 @@
   ),
   "body-text-args": (fill: darkfg),
   "heading-box-args": (
-    inset: 0.4em,
+    inset: 0.5em,
     width: 100%,
     fill: primary,
     radius: (top: 6pt),
@@ -51,7 +51,7 @@
 #pop.title-box(
   "Physics-Informed Generative World Models for Real-Time Bidding",
   subtitle: "Deriving Statistical Laws from First Principles",
-  authors: "Chenyang Wu¹ · Shengjun Fang¹ · Mingjun Cao¹ · Pengfei Liu¹ · Zongzhang Zhang¹ · Yeshu Li² · Tianyu Wang² · Zhilin Zhang² · Chuan Yu² · Jian Xu² · Bo Zheng²",
+  authors: "Chenyang Wu¹ · Tianyu Wang² · Shengjun Fang¹ · Mingjun Cao¹ · Pengfei Liu¹ · Zongzhang Zhang¹ · Yeshu Li² · Zhilin Zhang² · Chuan Yu² · Jian Xu² · Bo Zheng²",
   institutes: "¹Nanjing University       ²Alibaba Group",
   keywords: "KDD 2026  |  Real-Time Bidding · Generative World Models · Physics-Informed Statistical Modeling · Normalizing Flow Copula",
   text-relative-width: 100%,
@@ -112,7 +112,7 @@
   $ P(y) = (1 - pi) delta(y) + pi dot (a y^(a p - 1)) / (b^(a p) B(p,q) [1 + (y\/b)^a]^(p+q)) $
 
   #v(0.15em)
-  #text(size: 24pt)[
+  #text(size: 26pt)[
     #table(
       columns: (auto, auto, auto, auto, auto),
       inset: 0.25em,
@@ -133,7 +133,7 @@
 
   We use *NF copula* with rational quadratic spline flows.
 
-  #text(size: 25pt)[
+  #text(size: 28pt)[
     #table(
       columns: (auto, auto, auto, auto, auto),
       inset: 0.25em,
@@ -178,9 +178,10 @@
 
 #pop.column-box(heading: "Main Results: Distributional Fidelity")[
   #text(size: 23pt)[
+    #show table.cell.where(y: 0): set text(.7em)
     #table(
       columns: (auto, auto, auto, auto, auto, auto, auto, auto, auto),
-      inset: 0.22em,
+      inset: 1.2em,
       stroke: 0.5pt + primary.lighten(50%),
       align: center,
       table.header[*Method*][*CLICK\ SMAPE*][*CLICK\ CRPS*][*COST\ SMAPE*][*COST\ CRPS*][*PV\ SMAPE*][*PV\ CRPS*][*VALUE\ SMAPE*][*VALUE\ CRPS*],
@@ -217,7 +218,7 @@
 
 
 #pop.column-box(heading: "Selected References")[
-  #set text(size: 20pt)
+  #set text(size: 23pt)
   + Zhang et al. "Feedback control of real-time display advertising." _WSDM_, 2016.
   + He et al. "A unified solution to constrained bidding." _KDD_, 2021.
   + Jorgensen. _The Theory of Dispersion Models._ CRC Press, 1997.
