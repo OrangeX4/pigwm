@@ -6,7 +6,17 @@
 
 // --- Page & Layout Setup ---
 #set page("a0", margin: 1cm)
-#pop.set-poster-layout(pop.layout-a0)
+#pop.set-poster-layout(pop.layout-a0 + (
+    // "paper":            "a0",
+    // "size":             (841mm, 1188mm),
+    // "body-size":        33pt,
+    "heading-size":     40pt,
+    // "title-size":       75pt,
+    // "subtitle-size":    60pt,
+    // "authors-size":     50pt,
+    // "institutes-size":  45pt,
+    // "keywords-size":    40pt,
+))
 
 // --- Custom Minimalist Theme ---
 #let primary = rgb("#1a5276")
@@ -16,7 +26,7 @@
 
 #pop.set-theme((
   "body-box-args": (
-    inset: 0.6em,
+    inset: 0.8em,
     width: 100%,
     stroke: 1.2pt + primary.lighten(60%),
     radius: 6pt,
@@ -24,15 +34,14 @@
   ),
   "body-text-args": (fill: darkfg),
   "heading-box-args": (
-    inset: 0.5em,
+    inset: 0.8em,
     width: 100%,
     fill: primary,
     radius: (top: 6pt),
   ),
   "heading-text-args": (fill: white, weight: "bold"),
   "title-box-args": (
-    inset: (x: 0.8em, y: 0.5em),
-    width: 100%,
+    inset: 0.8em,
     fill: gradient.linear(primary, accent, angle: 0deg),
     radius: 8pt,
   ),
@@ -45,6 +54,9 @@
 #set block(spacing: box-spacing)
 #pop.update-poster-layout(spacing: box-spacing)
 
+// table
+#set table(align: center + horizon, stroke: none, inset: .5em)
+#let tlt(..args) = table(table.hline(stroke: 1pt, y: 0), table.hline(stroke: .5pt, y: 1), ..args, table.hline(stroke: 1pt))
 // ============================================================================
 // TITLE
 // ============================================================================
@@ -69,7 +81,7 @@
 
 // ===================== COLUMN 1 =====================
 
-#pop.column-box(heading: "Motivation & Problem")[
+#pop.column-box(heading-size: 12pt, heading: "Motivation & Problem")[
   Current RTB simulators rely on *deterministic point predictions* (MSE), which are ill-posed for auction data:
 
   #block(inset: (left: 0.5em))[
@@ -112,12 +124,9 @@
   $ P(y) = (1 - pi) delta(y) + pi dot (a y^(a p - 1)) / (b^(a p) B(p,q) [1 + (y\/b)^a]^(p+q)) $
 
   #v(0.15em)
-  #text(size: 26pt)[
-    #table(
-      columns: (auto, auto, auto, auto, auto),
-      inset: 0.25em,
-      stroke: 0.5pt + primary.lighten(50%),
-      align: center,
+  #text(size: 25pt)[
+    #tlt(
+      columns: (220pt, auto, auto, auto, auto),
       table.header[*Surrogate*][*NLL Gap*][*VaR Err*][*Mean Err*][*Var Err*],
       [ZI-Lognormal], [$0.094$], [$54.3%$], [$41.2%$], [$1725%$],
       [ZI-SLN], [$0.086$], [$30.5%$], [$30.6%$], [$1075%$],
@@ -133,20 +142,14 @@
 
   We use *NF copula* with rational quadratic spline flows.
 
-  #text(size: 28pt)[
-    #table(
+  #text(size: 25pt)[
+    #tlt(
       columns: (auto, auto, auto, auto, auto),
-      inset: 0.25em,
-      stroke: 0.5pt + primary.lighten(50%),
-      align: center,
       table.header[*Copula*][*Gaussian*][*Student-t*][*Gumbel*][*NF (Ours)*],
       [*Test NLL*], [$-1.405$], [$-1.441$], [$-0.540$], [*$-1.909$*],
     )
   ]
 ]
-
-// ===================== COLUMN 2 =====================
-#colbreak()
 
 
 #pop.column-box(heading: "Empirical Verification")[
@@ -172,18 +175,11 @@
   ]
 ]
 
-
-// ===================== COLUMN 3 =====================
-#colbreak()
-
 #pop.column-box(heading: "Main Results: Distributional Fidelity")[
   #text(size: 23pt)[
     #show table.cell.where(y: 0): set text(.7em)
-    #table(
-      columns: (auto, auto, auto, auto, auto, auto, auto, auto, auto),
-      inset: 1.2em,
-      stroke: 0.5pt + primary.lighten(50%),
-      align: center,
+    #tlt(
+      columns: (170pt, auto, auto, auto, auto, auto, auto, auto, auto),
       table.header[*Method*][*CLICK\ SMAPE*][*CLICK\ CRPS*][*COST\ SMAPE*][*COST\ CRPS*][*PV\ SMAPE*][*PV\ CRPS*][*VALUE\ SMAPE*][*VALUE\ CRPS*],
       [BFM (MSE)], [1.763], [1.417], [1.680], [0.860], [1.974], [50.46], [1.756], [8.231],
       [BFM (GB2)], [0.685], [0.688], [0.775], [0.605], [0.479], [12.13], [0.738], [3.434],
@@ -216,40 +212,4 @@
   + *SOTA distributional fidelity* and *clear neural scaling laws* on production-scale Taobao datasets
 ]
 
-
-#pop.column-box(heading: "Selected References")[
-  #set text(size: 23pt)
-  + Zhang et al. "Feedback control of real-time display advertising." _WSDM_, 2016.
-  + He et al. "A unified solution to constrained bidding." _KDD_, 2021.
-  + Jorgensen. _The Theory of Dispersion Models._ CRC Press, 1997.
-  + McDonald. "Generalized functions for size distribution of income." 2008.
-  + Sklar. "Fonctions de répartition à n dimensions et leurs marges." 1959.
-  + Durkan et al. "Neural spline flows." _NeurIPS_, 2019.
-  + Ji et al. "Bid2X: Dynamics of bidding environment." _KDD_, 2025.
-  + Zhou et al. "Informer: Beyond efficient transformer." _AAAI_, 2021.
-  + Wiese et al. "Copula & marginal flows." 2019.
-  + Resnick. _Heavy-tail phenomena._ Springer, 2007.
-]
-
 ])
-
-// ============================================================================
-// BOTTOM BAR
-// ============================================================================
-#pop.bottom-box(
-  heading-box-args: (
-    inset: (x: 0.8em, y: 0.35em),
-    width: 100%,
-    fill: gradient.linear(primary, accent, angle: 0deg),
-    radius: 8pt,
-  ),
-  heading-text-args: (fill: white),
-)[
-  #text(size: 28pt)[
-    *Contact:* Nanjing University & Alibaba Group
-    #h(2em)
-    *Conference:* KDD 2026
-    #h(2em)
-    *Topics:* Real-Time Bidding · Generative World Models · Physics-Informed Statistical Modeling
-  ]
-]
