@@ -185,7 +185,7 @@
 #pop.column-box(heading: "Normalizing Flow Copula")[
   Gaussian copula implies $lambda_u = 0$ (tail independence) — wrong for RTB!
 
-  *Proposition:* Under our axioms, $lim_(u arrow 1^-) P(F_C(C) > u | F_V(V) > u) = 1$
+  *Proposition:* Under our axioms,\ #h(1fr)$lim_(u arrow 1^-) P(F_C(C) > u | F_V(V) > u) = 1$#h(1fr)
 
   This means Cost and Value are *perfectly tail-dependent* in the limit, driven by the shared latent intensity $lambda$. We use a *NF copula* with rational quadratic spline flows to capture the full nonlinear dependence.
 
