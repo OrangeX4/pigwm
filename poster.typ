@@ -65,13 +65,22 @@
   subtitle: "Deriving Statistical Laws from First Principles",
   authors: "Chenyang Wu¹ · Tianyu Wang² · Shengjun Fang¹ · Mingjun Cao¹ · Pengfei Liu¹ · Zongzhang Zhang¹ · Yeshu Li² · Zhilin Zhang² · Chuan Yu² · Jian Xu² · Bo Zheng²",
   institutes: "¹Nanjing University       ²Alibaba Group",
-  keywords: "KDD 2026  |  Real-Time Bidding · Generative World Models · Physics-Informed Statistical Modeling · Normalizing Flow Copula",
-  text-relative-width: 100%,
+  keywords: "Real-Time Bidding · Generative World Models · Physics-Informed Statistical Modeling · Normalizing Flow Copula",
+  text-relative-width: 70%,
+  spacing: 0pt,
   title-size: 62pt,
   subtitle-size: 46pt,
   authors-size: 33pt,
   institutes-size: 31pt,
   keywords-size: 28pt,
+  logo: block(height: 300pt, align(horizon, stack(
+    grid(
+      columns: (1fr, 0.4fr),
+      column-gutter: 1cm,
+      align(right, image("base/lamda_logo.png")),
+      align(right, image("base/nju_color_logo.png")),
+    )
+  ))),
 )
 
 // ============================================================================

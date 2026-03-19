@@ -1,6 +1,7 @@
 # Build artifacts
 *.pdf
 *.png
+!base/*.png
 !images/*.png
 !acm-jdslogo.png
 !sample-franklin.png
