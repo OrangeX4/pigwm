@@ -90,7 +90,24 @@
 
 // ===================== COLUMN 1 =====================
 
-#pop.column-box(heading-size: 12pt, heading: "Motivation & Problem")[
+#pop.column-box(heading: "Paper Outline")[
+  #set text(size: 25pt)
+  #grid(
+    columns: (1fr, auto, 1fr, auto, 1fr, auto, 1fr),
+    column-gutter: 0pt,
+    row-gutter: 0.25em,
+    align: center + horizon,
+    block(fill: accent.lighten(75%), inset: (x: 0.3em, y: 0.35em), radius: 5pt, width: 100%)[*① Problem*\ Setup],
+    text(fill: accent, size: 30pt)[→],
+    block(fill: accent.lighten(75%), inset: (x: 0.3em, y: 0.35em), radius: 5pt, width: 100%)[*② Physical*\ Modeling],
+    text(fill: accent, size: 30pt)[→],
+    block(fill: accent.lighten(75%), inset: (x: 0.3em, y: 0.35em), radius: 5pt, width: 100%)[*③ Copula*\ Dependence],
+    text(fill: accent, size: 30pt)[→],
+    block(fill: accent.lighten(75%), inset: (x: 0.3em, y: 0.35em), radius: 5pt, width: 100%)[*④ Empirical*\ Validation],
+  )
+]
+
+#pop.column-box(heading: "Motivation & Problem")[
   Current RTB simulators rely on *deterministic point predictions* (MSE), which are ill-posed for auction data:
 
   #block(inset: (left: 0.5em))[
@@ -124,6 +141,28 @@
   *Hypotheses:* \ $ln lambda tilde cal(N)(mu, sigma^2)$ (multiplicative heterogeneity) and $X_i tilde "Gamma"(alpha, beta)$ (gamma marks).
 ]
 
+#pop.column-box(heading: "Key Notation")[
+  #set text(size: 23pt)
+  #table(
+    columns: (auto, 1fr, 0.3em, auto, 1fr),
+    stroke: none,
+    inset: (x: 0.25em, y: 0.2em),
+    align: (right, left, center, right, left),
+    table.hline(stroke: 0.8pt),
+    table.header(
+      [*Symbol*], [*Description*], [], [*Symbol*], [*Description*],
+    ),
+    table.hline(stroke: 0.5pt),
+    [$bold(y)_t$], [Feedback vector (clicks, cost, GMV)], [], [$N$],        [Winning impressions],
+    [$h_t$],      [Interaction history up to time $t$],  [], [$X_i$],      [Per-impression value (mark)],
+    [$bold(b)_t$],[Bidding control vector],               [], [$Y$],        [Cumul. feedback: $Y = sum X_i$],
+    [$bold(c)$],  [Static campaign covariates],           [], [$pi$],       [Zero-inflation probability],
+    [$lambda$],   [Poisson intensity (market activity)],  [], [$a,p,q,b$],  [ZI-GB2 distribution params],
+    [$mu,sigma^2$],[Lognormal params of $ln lambda$],     [], [$lambda_u$], [Upper tail dependence coeff.],
+    [$alpha,beta$],[Gamma shape & rate of $X_i$],         [], [$alpha$],    [Power-law scaling exponent],
+    table.hline(stroke: 0.8pt),
+  )
+]
 
 #pop.column-box(heading: "Derived Laws & ZI-GB2 Surrogate")[
   *Traffic* → *ZI-Poisson-Lognormal* \
@@ -144,6 +183,7 @@
   ]
 ]
 
+
 #pop.column-box(heading: "Normalizing Flow Copula")[
   Gaussian copula implies $lambda_u = 0$ (tail independence) — wrong for RTB!
 
@@ -160,27 +200,34 @@
   ]
 ]
 
+#colbreak()
+
+// ===================== COLUMN 2 =====================
 
 #pop.column-box(heading: "Empirical Verification")[
   #figure(caption: [Q-Q plot of latent $ln lambda$ vs. standard normal ($R^2 = 0.99942$). Validates log-normal hypothesis.])[
-    #image("images/fig3_posterior_qq_plot.png", width: 72%)
+    #image("images/fig3_posterior_qq_plot.png", width: 60%)
   ]
   #v(0.2em)
   #figure(caption: [Tail dependence: NF copula captures persistent structural coupling; Gaussian copula incorrectly decays to independence.])[
-    #image("images/fig4_tail_dependence_cond_prob.png", width: 80%)
+    #image("images/fig4_tail_dependence_cond_prob.png", width: 66%)
   ]
 ]
 
 
 #pop.column-box(heading: "Heavy-Tail Evidence")[
   #figure(caption: [Hill estimator confirms structural heavy-tailedness of RTB feedback — extreme events are intrinsic to the market.])[
-    #image("images/fig1_heavy_tail_viz.png", width: 80%)
+    #image("images/fig1_heavy_tail_viz.png", width: 66%)
   ]
 ]
 
+#colbreak()
+
+// ===================== COLUMN 3 =====================
+
 #pop.column-box(heading: "Convergence Analysis")[
   #figure(caption: [KL divergence between Compound Poisson-Beta and Compound Poisson-Gamma aggregates decreases rapidly with intensity $lambda$, validating the Gamma mark approximation.])[
-    #image("images/fig2_tweedie_lambda_convergence.png", width: 80%)
+    #image("images/fig2_tweedie_lambda_convergence.png", width: 66%)
   ]
 ]
 
@@ -205,6 +252,7 @@
   - ZI-GB2 achieves *SOTA* distributional fidelity (PV CRPS: $14.80 arrow 8.81$)
   - Physics-informed loss is *architecture-agnostic* and generalizable
 ]
+
 
 #pop.column-box(heading: "Neural Scaling Laws")[
   Performance follows a power-law: $L(M) prop M^(-alpha)$
