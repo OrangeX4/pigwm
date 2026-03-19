@@ -10,7 +10,7 @@
     // "paper":            "a0",
     // "size":             (841mm, 1188mm),
     // "body-size":        33pt,
-    "heading-size":     40pt,
+    "heading-size":     39pt,
     // "title-size":       75pt,
     // "subtitle-size":    60pt,
     // "authors-size":     50pt,
@@ -117,7 +117,6 @@
 ]
 
 #pop.column-box(heading: "Key Notation")[
-  #v(10pt)
   #table(
     columns: (auto, 1fr),
     stroke: none,
@@ -141,22 +140,21 @@
     [$lambda_u$],      [Upper tail dependence coefficient between Cost and Value],
     table.hline(stroke: 0.8pt),
   )
-  #v(10pt)
 ]
 
 #pop.column-box(heading: "Four Fundamental Axioms")[
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
     *Axiom 1 — Discrete Counting:*  $N tilde "Poisson"(lambda Delta t)$
   ]
-  #v(0.1em)
+  #v(0.06em)
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
     *Axiom 2 — Compound Accumulation:*  $Y = sum_(i=1)^N X_i$
   ]
-  #v(0.1em)
+  #v(0.06em)
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
     *Axiom 3 — Shared Event:*  Cost & Value coupled via shared $lambda$
   ]
-  #v(0.1em)
+  #v(0.06em)
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
     *Axiom 4 — Dual Zero-Inflation:*  Structural ($e^(-lambda Delta t)$) + Anomalous
   ]
@@ -191,8 +189,6 @@
 
   This means Cost and Value are *perfectly tail-dependent* in the limit, driven by the shared latent intensity $lambda$. We use a *NF copula* with rational quadratic spline flows to capture the full nonlinear dependence.
 
-  #v(6pt)
-
   #text(size: 25pt)[
     #tlt(
       columns: (auto, auto, auto, auto, auto),
@@ -201,7 +197,6 @@
     )
   ]
 
-  #v(6pt)
 ]
 
 
@@ -214,6 +209,7 @@
 // ===================== COLUMN 2 =====================
 
 #pop.column-box(heading: "Empirical Verification")[
+  #v(8pt)
   #figure(caption: [Q-Q plot of latent $ln lambda$ vs. standard normal ($R^2 = 0.99942$). Validates log-normal hypothesis.])[
     #image("images/fig3_posterior_qq_plot.png", width: 60%)
   ]
@@ -221,6 +217,8 @@
   #figure(caption: [Tail dependence: NF copula captures persistent structural coupling; Gaussian copula incorrectly decays to independence.])[
     #image("images/fig4_tail_dependence_cond_prob.png", width: 66%)
   ]
+
+  #v(8pt)
 ]
 
 // ===================== COLUMN 3 =====================
@@ -232,10 +230,11 @@
 // ]
 
 #pop.column-box(heading: "Main Results: Distributional Fidelity")[
+  #v(10pt)
   #text(size: 23pt)[
     #show table.cell.where(y: 0): set text(.7em)
     #tlt(
-      columns: (170pt, auto, auto, auto, auto, auto, auto, auto, auto),
+      columns: (160pt, auto, auto, auto, auto, auto, auto, auto, auto),
       table.header[#text(1.3em)[*Method*]][*CLICK\ SMAPE*][*CLICK\ CRPS*][*COST\ SMAPE*][*COST\ CRPS*][*PV\ SMAPE*][*PV\ CRPS*][*VALUE\ SMAPE*][*VALUE\ CRPS*],
       [BFM (MSE)], [1.763], [1.417], [1.680], [0.860], [1.974], [50.46], [1.756], [8.231],
       [BFM (GB2)], [0.685], [0.688], [0.775], [0.605], [0.479], [12.13], [0.738], [3.434],
@@ -246,6 +245,7 @@
       [Trans. (GB2)], [0.706], [0.734], [0.772], [0.603], [0.471], [12.16], [0.733], [3.445],
     )
   ]
+  #v(10pt)
 
   *Key insights:*
   - MSE yields *poorest* performance across all architectures
