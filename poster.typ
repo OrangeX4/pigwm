@@ -91,20 +91,13 @@
 // ===================== COLUMN 1 =====================
 
 #pop.column-box(heading: "Paper Outline")[
-  #set text(size: 25pt)
-  #grid(
-    columns: (1fr, auto, 1fr, auto, 1fr, auto, 1fr),
-    column-gutter: 0pt,
-    row-gutter: 0.25em,
-    align: center + horizon,
-    block(fill: accent.lighten(75%), inset: (x: 0.3em, y: 0.35em), radius: 5pt, width: 100%)[*① Problem*\ Setup],
-    text(fill: accent, size: 30pt)[→],
-    block(fill: accent.lighten(75%), inset: (x: 0.3em, y: 0.35em), radius: 5pt, width: 100%)[*② Physical*\ Modeling],
-    text(fill: accent, size: 30pt)[→],
-    block(fill: accent.lighten(75%), inset: (x: 0.3em, y: 0.35em), radius: 5pt, width: 100%)[*③ Copula*\ Dependence],
-    text(fill: accent, size: 30pt)[→],
-    block(fill: accent.lighten(75%), inset: (x: 0.3em, y: 0.35em), radius: 5pt, width: 100%)[*④ Empirical*\ Validation],
-  )
+  *① Problem Setup:* RTB bidding is formulated as a history-dependent Markov decision process (HMDP). The key task is learning the conditional joint density $P_theta (bold(y)_t | h_t, bold(b)_t, bold(c))$ of multi-dimensional feedback (clicks, cost, GMV) from an offline dataset.
+
+  *② Physics-Informed Marginal Modeling:* Starting from four first-principle axioms about the auction mechanism, we derive that traffic follows a ZI-Poisson-Lognormal law and cumulative value follows a ZI-Tweedie-Lognormal law. We then select ZI-GB2 as an efficient closed-form surrogate that matches the true distribution.
+
+  *③ Copula Dependence:* We prove that Cost and Value are asymptotically tail-dependent ($lambda_u = 1$) due to their shared winning-impression process. A normalizing flow (NF) copula is used to capture this full dependency structure, while standard Gaussian copulas incorrectly imply tail independence ($lambda_u = 0$).
+
+  *④ Empirical Validation:* On large-scale production datasets from Taobao, our model achieves state-of-the-art distributional fidelity across all metrics and exhibits clear neural scaling laws, confirming that physics-informed statistical alignment is a prerequisite for high-fidelity world models.
 ]
 
 #pop.column-box(heading: "Motivation & Problem")[
@@ -113,12 +106,14 @@
   #block(inset: (left: 0.5em))[
     *①* Cannot capture *extreme heteroscedasticity* (variance $prop mu^p$)\
     *②* Neglect *structural coupling* between Cost and GMV\
-    *③* Log-MSE introduces *systematic bias* via Jensen's inequality
+    *③* Log-MSE introduces *systematic bias* via Jensen's inequality ($EE[log Y] != log EE[Y]$)
   ]
 
   *Our goal:* Estimate the full conditional joint density
   $P_theta (bold(y)_t | h_t, bold(b)_t, bold(c))$
   that respects *zero-inflation*, *heavy tails*, and *tail dependence*.
+
+  A high-fidelity generative world model is indispensable for offline RL policy training, since deploying RL directly online incurs prohibitive exploration costs.
 ]
 
 #pop.column-box(heading: "Four Fundamental Axioms")[
@@ -138,38 +133,46 @@
     *Axiom 4 — Dual Zero-Inflation:*  Structural ($e^(-lambda Delta t)$) + Anomalous
   ]
 
-  *Hypotheses:* \ $ln lambda tilde cal(N)(mu, sigma^2)$ (multiplicative heterogeneity) and $X_i tilde "Gamma"(alpha, beta)$ (gamma marks).
+  *Hypotheses:* $ln lambda tilde cal(N)(mu, sigma^2)$ (multiplicative heterogeneity) and $X_i tilde "Gamma"(alpha, beta)$ (gamma marks). These are empirically verified via Q-Q plots and Hill estimators on production data.
 ]
 
 #pop.column-box(heading: "Key Notation")[
-  #set text(size: 23pt)
+  #set text(size: 26pt)
   #table(
-    columns: (auto, 1fr, 0.3em, auto, 1fr),
+    columns: (auto, 1fr),
     stroke: none,
-    inset: (x: 0.25em, y: 0.2em),
-    align: (right, left, center, right, left),
+    inset: (x: 0.4em, y: 0.3em),
+    align: (right, left),
     table.hline(stroke: 0.8pt),
-    table.header(
-      [*Symbol*], [*Description*], [], [*Symbol*], [*Description*],
-    ),
+    table.header([*Symbol*], [*Description*]),
     table.hline(stroke: 0.5pt),
-    [$bold(y)_t$], [Feedback vector (clicks, cost, GMV)], [], [$N$],        [Winning impressions],
-    [$h_t$],      [Interaction history up to time $t$],  [], [$X_i$],      [Per-impression value (mark)],
-    [$bold(b)_t$],[Bidding control vector],               [], [$Y$],        [Cumul. feedback: $Y = sum X_i$],
-    [$bold(c)$],  [Static campaign covariates],           [], [$pi$],       [Zero-inflation probability],
-    [$lambda$],   [Poisson intensity (market activity)],  [], [$a,p,q,b$],  [ZI-GB2 distribution params],
-    [$mu,sigma^2$],[Lognormal params of $ln lambda$],     [], [$lambda_u$], [Upper tail dependence coeff.],
-    [$alpha,beta$],[Gamma shape & rate of $X_i$],         [], [$alpha$],    [Power-law scaling exponent],
+    [$bold(y)_t$],     [Multi-dimensional feedback vector (clicks, cost, GMV)],
+    [$h_t$],           [Interaction history up to time $t$],
+    [$bold(b)_t$],     [Bidding control vector (action)],
+    [$bold(c)$],       [Static campaign covariates],
+    [$N$],             [Number of winning impressions in a slot],
+    [$X_i$],           [Per-impression value (microscopic mark)],
+    [$Y = sum X_i$],   [Cumulative feedback aggregated over $N$ impressions],
+    [$lambda$],        [Poisson intensity (latent market activity rate)],
+    [$pi$],            [Zero-inflation probability (structural zeros)],
+    [$mu, sigma^2$],   [Mean and variance of $ln lambda$ (lognormal heterogeneity)],
+    [$alpha, beta$],   [Gamma shape and rate parameters of mark $X_i$],
+    [$a,p,q,b$],       [ZI-GB2 distribution shape and scale parameters],
+    [$lambda_u$],      [Upper tail dependence coefficient between Cost and Value],
     table.hline(stroke: 0.8pt),
   )
 ]
 
 #pop.column-box(heading: "Derived Laws & ZI-GB2 Surrogate")[
+  From the axioms and hypotheses, the marginal distributions are derived as:
+
   *Traffic* → *ZI-Poisson-Lognormal* \
   *Value* → *ZI-Tweedie-Lognormal* (physical ground truth)
 
-  Since ZI-TLN lacks closed form, we use *ZI-GB2*:
+  Since ZI-TLN lacks a closed-form density, we propose *ZI-GB2* as a tractable surrogate:
   $ P(y) = (1 - pi) delta(y) + pi dot (a y^(a p - 1)) / (b^(a p) B(p,q) [1 + (y\/b)^a]^(p+q)) $
+
+  ZI-GB2 subsumes ZI-Lognormal, ZI-Pareto, and ZI-Weibull as special cases, giving it the flexibility to match the true heavy-tailed shape.
 
   #v(0.15em)
   #text(size: 25pt)[
@@ -185,11 +188,11 @@
 
 
 #pop.column-box(heading: "Normalizing Flow Copula")[
-  Gaussian copula implies $lambda_u = 0$ (tail independence) — wrong for RTB!
+  Standard Gaussian copula implies $lambda_u = 0$ (asymptotic tail independence) — a fundamental misspecification for RTB, where extreme events co-occur structurally.
 
   *Proposition:* Under our axioms, $lim_(u arrow 1^-) P(F_C(C) > u | F_V(V) > u) = 1$
 
-  We use *NF copula* with rational quadratic spline flows.
+  This means Cost and Value are *perfectly tail-dependent* in the limit, driven by the shared latent intensity $lambda$. We use a *NF copula* with rational quadratic spline flows to capture the full nonlinear dependence.
 
   #text(size: 25pt)[
     #tlt(
@@ -200,33 +203,30 @@
   ]
 ]
 
-#colbreak()
-
 // ===================== COLUMN 2 =====================
 
 #pop.column-box(heading: "Empirical Verification")[
-  #figure(caption: [Q-Q plot of latent $ln lambda$ vs. standard normal ($R^2 = 0.99942$). Validates log-normal hypothesis.])[
+  *Log-normal latent intensity:* The posterior $ln hat(lambda)$ estimated from data fits a standard normal almost perfectly ($R^2 = 0.99942$), strongly validating the log-normal hypothesis.
+  #figure(caption: [Q-Q plot of latent $ln lambda$ vs. standard normal. $R^2 = 0.99942$.])[
     #image("images/fig3_posterior_qq_plot.png", width: 60%)
   ]
-  #v(0.2em)
-  #figure(caption: [Tail dependence: NF copula captures persistent structural coupling; Gaussian copula incorrectly decays to independence.])[
+  *Asymptotic tail dependence:* The NF copula captures the persistent structural coupling between Cost and Value at extreme quantiles, while the Gaussian copula erroneously decays to independence.
+  #figure(caption: [Conditional tail probability $P(F_C > u | F_V > u)$ vs. threshold $u$.])[
     #image("images/fig4_tail_dependence_cond_prob.png", width: 66%)
   ]
 ]
 
 
 #pop.column-box(heading: "Heavy-Tail Evidence")[
-  #figure(caption: [Hill estimator confirms structural heavy-tailedness of RTB feedback — extreme events are intrinsic to the market.])[
+  RTB feedback is not merely skewed — it is *structurally heavy-tailed*. The Hill estimator applied to real Taobao data shows that the tail index $xi > 0$ across all feedback types (clicks, cost, GMV), meaning extreme events have non-negligible probability that standard Gaussian or light-tailed models cannot capture.
+  #figure(caption: [Hill estimator confirms heavy-tailedness of RTB feedback across all variables. Extreme events are intrinsic to the market, not outliers.])[
     #image("images/fig1_heavy_tail_viz.png", width: 66%)
   ]
 ]
 
-#colbreak()
-
-// ===================== COLUMN 3 =====================
-
 #pop.column-box(heading: "Convergence Analysis")[
-  #figure(caption: [KL divergence between Compound Poisson-Beta and Compound Poisson-Gamma aggregates decreases rapidly with intensity $lambda$, validating the Gamma mark approximation.])[
+  We verify that the Compound Poisson-Gamma (Tweedie) approximation to Compound Poisson-Beta is valid. As the Poisson intensity $lambda$ increases, the KL divergence between the two aggregate distributions decreases rapidly toward zero, confirming that the Gamma mark approximation is accurate in the high-traffic regime typical of production RTB.
+  #figure(caption: [KL divergence between Compound Poisson-Beta and Compound Poisson-Gamma aggregates vs. intensity $lambda$.])[
     #image("images/fig2_tweedie_lambda_convergence.png", width: 66%)
   ]
 ]
@@ -255,9 +255,13 @@
 
 
 #pop.column-box(heading: "Neural Scaling Laws")[
+  #figure(caption: [Median SMAPE vs. model parameter count across architectures and loss functions.])[
+    #image("images/fig5_median-smape_vs_params.pdf", width: 80%)
+  ]
+
   Performance follows a power-law: $L(M) prop M^(-alpha)$
 
-  $alpha_("GB2") approx 0.16 > alpha_("MSE") approx 0.12$ — physics-informed models gain *more* from scaling.
+  $alpha_("GB2") approx 0.16 > alpha_("MSE") approx 0.12$ — physics-informed models gain *more* from scaling than MSE-trained baselines.
 
   *Statistical alignment with data generation is a prerequisite for unlocking the potential of large foundation models.*
 ]
