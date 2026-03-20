@@ -259,7 +259,7 @@
 
   We model the copula via a *Normalizing Flow* with rational quadratic spline transforms, which can represent arbitrary non-Gaussian and asymmetric dependency structures, including $lambda_u = 1$.
 
-  #figure(caption: [Conditional tail probability $P(U_("PGMV") > u | U_("PV") > u)$ (where $U = F(cdot)$ denotes the probability integral transform) vs.\ tail threshold $(1-u)$. Real data maintains high co-extreme dependence as $u arrow 1$; the NF copula tracks this faithfully, while the Gaussian copula incorrectly decays to independence.])[
+  #figure(caption: [Conditional tail probability $P(U_("PGMV") > u | U_("PV") > u)$ (where $U = F(dot)$ denotes the probability integral transform) vs.\ tail threshold $(1-u)$. Real data maintains high co-extreme dependence as $u arrow 1$; the NF copula tracks this faithfully, while the Gaussian copula incorrectly decays to independence.])[
     #image("images/fig4_tail_dependence_cond_prob.png", width: 80%)
   ]
 
