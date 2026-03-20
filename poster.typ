@@ -68,10 +68,10 @@
   keywords: "Real-Time Bidding · Generative World Models · Physics-Informed Statistical Modeling · Normalizing Flow Copula",
   text-relative-width: 70%,
   spacing: 0pt,
-  title-size: 62pt,
-  subtitle-size: 46pt,
-  authors-size: 33pt,
-  institutes-size: 31pt,
+  title-size: 54pt,
+  subtitle-size: 45pt,
+  authors-size: 30pt,
+  institutes-size: 29pt,
   keywords-size: 28pt,
   logo: block(height: 300pt, align(horizon, stack(
     grid(
@@ -93,42 +93,58 @@
 // ===================== COLUMN 1 =====================
 
 #pop.column-box(heading: "Motivation & Problem")[
-  Existing RTB simulators rely on *log-domain MSE regression*, which is fundamentally ill-posed for auction data:
-
-  *①* *Log-MSE biases the mean:* Jensen's inequality gives $EE[log Y] != log EE[Y]$, so log-domain regression systematically underestimates $EE[Y]$.
-
-  *②* *Ignores zero-inflation:* A large fraction of auctions yield zero feedback (lost bids). MSE treats these as ordinary small values.
-
-  *③* *Ignores extreme heteroscedasticity:* Variance scales as $op("Var")[Y] prop mu^p$ — orders-of-magnitude differences across campaigns that a single MSE loss cannot handle.
-
-  *④* *Ignores heavy tails:* RTB feedback exhibits power-law tails; MSE penalises extreme events symmetrically, distorting the fit.
-
-  *⑤* *Ignores tail dependence:* Cost and Value share the same winning impressions, so they are strongly coupled in extreme regimes; MSE models each variable independently.
-
+  Existing RTB simulators rely on *log-domain MSE regression*, which is fundamentally ill-posed for auction data:\
+  *①* *Log-MSE biases the mean:* Jensen's inequality gives $EE[log Y] != log EE[Y]$, so log-domain regression systematically underestimates $EE[Y]$.\
+  *②* *Ignores zero-inflation:* A large fraction of auctions yield zero feedback (lost bids). MSE treats these as ordinary small values.\
+  *③* *Ignores extreme heteroscedasticity:* Variance scales as $op("Var")[Y] prop mu^p$ — orders-of-magnitude differences across campaigns that a single MSE loss cannot handle.\
+  *④* *Ignores heavy tails:* RTB feedback exhibits power-law tails; MSE penalises extreme events symmetrically, distorting the fit.\
+  *⑤* *Ignores tail dependence:* Cost and Value share the same winning impressions, so they are strongly coupled in extreme regimes; MSE models each variable independently.\
   *Our goal:* Estimate the full conditional joint density $P_theta (bold(y)_t | h_t, bold(b)_t, bold(c))$ that respects zero-inflation, heavy tails, and tail dependence — the indispensable simulator for offline RL in computational advertising.
 ]
 
 #pop.column-box(heading: "Paper Outline")[
-  *① Marginal Modeling*
+  // *① Marginal Modeling*
+  // #block(fill: lightbg, inset: 0.4em, radius: 4pt, width: 100%)[
+  //   Statistical model selection *fails* in heavy-tail regimes (Flat Minima). We instead derive distributions from *first principles* (physics-informed). Empirical evidence validates the assumptions. ZI-GB2 serves as the practical surrogate.
+  // ]
+  // *② Dependence Modeling*
+  // #block(fill: lightbg, inset: 0.4em, radius: 4pt, width: 100%)[
+  //   Cost and Value are *perfectly tail-dependent* ($lambda_u = 1$) by construction — a Gaussian copula ($lambda_u = 0$) is provably wrong. A *Normalizing Flow copula* flexibly captures the full nonlinear dependence.
+  // ]
+  // *③ Experimental Results*
+  // #block(fill: lightbg, inset: 0.4em, radius: 4pt, width: 100%)[
+  //   SOTA *distributional fidelity* on production Taobao data. Physics-informed objectives are *architecture-agnostic* and exhibit superior *neural scaling*.
+  // ]
 
-  #block(fill: lightbg, inset: 0.4em, radius: 4pt, width: 100%)[
-    Statistical model selection *fails* in heavy-tail regimes (Flat Minima). We instead derive distributions from *first principles* (physics-informed). Empirical evidence validates the assumptions. ZI-GB2 serves as the practical surrogate.
-  ]
+  *① Marginal Modeling*\
+  #hide[① ]Physics-informed derivation; ZI-GB2 surrogate.
+  
+  *② Dependence Modeling*\
+  #hide[② ]Perfect tail dependence; NF copula.
 
-  *② Dependence Modeling*
-
-  #block(fill: lightbg, inset: 0.4em, radius: 4pt, width: 100%)[
-    Cost and Value are *perfectly tail-dependent* ($lambda_u = 1$) by construction — a Gaussian copula ($lambda_u = 0$) is provably wrong. A *Normalizing Flow copula* flexibly captures the full nonlinear dependence.
-  ]
-
-  *③ Experimental Results*
-
-  #block(fill: lightbg, inset: 0.4em, radius: 4pt, width: 100%)[
-    SOTA *distributional fidelity* on production Taobao data. Physics-informed objectives are *architecture-agnostic* and exhibit superior *neural scaling*.
-  ]
+  *③ Experimental Results*\
+  #hide[③ ]SOTA fidelity; architecture-agnostic.
 ]
 
+
+// #pop.column-box(heading: "Paper Outline")[
+//   #import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
+//   #set text(24.2pt)
+//   #diagram(
+//     node-stroke: .08em,
+//     node-fill: gradient.radial(lightbg, primary.lighten(70%), center: (30%, 20%), radius: 80%),
+//     spacing: 3em,
+//     edge-stroke: primary,
+//     node((0,0), [*Marginal\ Modeling*], inset: 1em),
+//     edge("-|>"),
+//     node((1,0), [*Dependence\ Modeling*], inset: 1em),
+//     edge("-|>"),
+//     node((2,0), [*Experimental\ Results*], inset: 1em),
+//   )
+// ]
+
 #pop.column-box(heading: "Key Notation")[
+  #v(16pt)
   #table(
     columns: (auto, 1fr),
     stroke: none,
@@ -152,33 +168,34 @@
     [$lambda_u$],      [Upper tail dependence coefficient between Cost and Value],
     table.hline(stroke: 0.8pt),
   )
+  #v(24pt)
 ]
 
 // ===================== COLUMN 2 =====================
 
-#pop.column-box(heading: "① Marginal Modeling")[
+#pop.column-box(heading: "Marginal Modeling")[
   === Why Statistical Model Selection Fails
 
   In heavy-tail regimes, NLL is dominated by the bulk of the distribution. Multiple families yield *indistinguishably similar NLL* scores ("Flat Minima"), yet imply *wildly different moments* — making data-driven selection unreliable.
 
-  #v(0.2em)
-  #text(size: 23pt)[
-    #tlt(
-      columns: (1fr, auto, auto, auto),
-      table.header[*Distribution*][*Test NLL*][*Mean ($10^3$)*][*Var ($10^7$)*],
-      [ZI-SLN],        [$9.2484$], [$4.42$], [$2.04$],
-      [ZI-GB2],        [$9.2485$], [$4.39$], [$2.02$],
-      [ZI-GLN],        [$9.2485$], [$4.37$], [$1.90$],
-      [ZI-TLN],        [$9.2491$], [$4.40$], [$2.06$],
-      [ZI-Lognormal],  [$9.2495$], [$4.42$], [$2.14$],
-      [ZI-BurrXII],    [$9.2546$], [$4.47$], [$4.00$],
-      [ZI-Log-logistic],[$9.2569$],[$4.74$], [$39.5$],
-      [ZI-Gamma],      [$9.2909$], [$4.38$], [$1.28$],
-    )
-  ]
-  #text(size: 22pt)[_NLL gap $< 0.005$ yet variance differs by $30times$._]
+  // #v(0.2em)
+  // #text(size: 23pt)[
+  //   #tlt(
+  //     columns: (1fr, auto, auto, auto),
+  //     table.header[*Distribution*][*Test NLL*][*Mean ($10^3$)*][*Var ($10^7$)*],
+  //     [ZI-SLN],        [$9.2484$], [$4.42$], [$2.04$],
+  //     [ZI-GB2],        [$9.2485$], [$4.39$], [$2.02$],
+  //     [ZI-GLN],        [$9.2485$], [$4.37$], [$1.90$],
+  //     [ZI-TLN],        [$9.2491$], [$4.40$], [$2.06$],
+  //     [ZI-Lognormal],  [$9.2495$], [$4.42$], [$2.14$],
+  //     [ZI-BurrXII],    [$9.2546$], [$4.47$], [$4.00$],
+  //     [ZI-Log-logistic],[$9.2569$],[$4.74$], [$39.5$],
+  //     [ZI-Gamma],      [$9.2909$], [$4.38$], [$1.28$],
+  //   )
+  // ]
+  // #text(size: 22pt)[_NLL gap $< 0.005$ yet variance differs by $30times$._]
 
-  #v(0.3em)
+  // #v(0.2em)
   === Physics-Informed Approach: Axioms & Hypotheses
 
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
@@ -200,11 +217,11 @@
   *Hypothesis 1:* $ln lambda tilde cal(N)(mu, sigma^2)$ (multiplicative heterogeneity)\
   *Hypothesis 2:* $X_i tilde "Gamma"(alpha, beta)$ (microscopic marks)
 
-  #v(0.3em)
+  // #v(0.2em)
   === Empirical Evidence
 
   #figure(caption: [Q-Q plot of latent $ln lambda$ vs.\ standard normal ($R^2 = 0.99942$), validating the lognormal intensity hypothesis.])[
-    #image("images/fig3_posterior_qq_plot.png", width: 60%)
+    #image("images/fig3_posterior_qq_plot.png", width: 74%)
   ]
 
   #v(0.2em)
@@ -222,7 +239,7 @@
   ]
   #text(size: 22pt)[_Gamma decisively outperforms alternatives in Anderson-Darling test._]
 
-  #v(0.3em)
+  // #v(0.2em)
   === Derived Laws & ZI-GB2 Surrogate
 
   *Traffic* → ZI-Poisson-Lognormal\
@@ -244,7 +261,7 @@
 
 // ===================== COLUMN 3 =====================
 
-#pop.column-box(heading: "② Dependence Modeling: NF Copula")[
+#pop.column-box(heading: "Dependence Modeling: NF Copula")[
   === Perfect Tail Dependence from Physics
 
   Feedback variables (Cost, GMV) share the *same winning impressions* — a surge in $lambda$ drives both upward simultaneously. This creates asymptotic tail dependence that a Gaussian copula *cannot* model.
@@ -263,18 +280,18 @@
     #image("images/fig4_tail_dependence_cond_prob.png", width: 80%)
   ]
 
-  #text(size: 23pt)[
+  #text(size: 25.3pt)[
     #tlt(
       columns: (auto, auto, auto, auto, auto),
       table.header[*Copula*][*Gaussian*][*Student-t*][*Gumbel*][*NF (Ours)*],
       [*Test NLL*], [$-1.405$], [$-1.441$], [$-0.540$], [*$-1.909$*],
     )
   ]
-  #text(size: 22pt)[_NF copula achieves best NLL and correctly captures tail dependence._]
+  #text(size: 24.5pt)[_NF copula achieves best NLL and correctly captures tail dependence._]
 ]
 
-#pop.column-box(heading: "③ Main Results: Distributional Fidelity")[
-  #v(6pt)
+#pop.column-box(heading: "Main Results: Distributional Fidelity")[
+  #v(3pt)
   #text(size: 22pt)[
     #show table.cell.where(y: 0): set text(.7em)
     #tlt(
@@ -289,7 +306,7 @@
       [Trans. (GB2)], [0.706], [0.734], [0.772], [0.603], [0.471], [12.16], [0.733], [3.445],
     )
   ]
-  #v(6pt)
+  #v(1pt)
 
   *Key insights:*
   - *MSE* yields the worst performance across *all* architectures, confirming log-MSE regression is ill-suited for RTB
@@ -297,11 +314,11 @@
   - Physics-informed loss is *architecture-agnostic*: consistent gains on BFM, Informer, and Transformer backbones
 ]
 
-#pop.column-box(heading: "Conclusions")[
-  + *Motivation:* Log-MSE regression fails to model zero-inflation, heteroscedasticity, heavy tails, and tail dependence — and cannot even estimate the mean correctly.
-  + *Marginal:* Statistical model selection fails in heavy-tail regimes; physics-informed derivation from axioms yields ZI-PLN and ZI-TLN laws; *ZI-GB2* is the efficient surrogate.
-  + *Dependence:* Shared winning impressions imply $lambda_u = 1$; *NF copula* captures this where Gaussian copula ($lambda_u = 0$) fails.
-  + *Results:* SOTA distributional fidelity; $alpha_("GB2") approx 0.16 > alpha_("MSE") approx 0.12$ — physics-informed models scale better.
-]
+// #pop.column-box(heading: "Conclusions")[
+//   + *Motivation:* Log-MSE regression fails to model zero-inflation, heteroscedasticity, heavy tails, and tail dependence — and cannot even estimate the mean correctly.
+//   + *Marginal:* Statistical model selection fails in heavy-tail regimes; physics-informed derivation from axioms yields ZI-PLN and ZI-TLN laws; *ZI-GB2* is the efficient surrogate.
+//   + *Dependence:* Shared winning impressions imply $lambda_u = 1$; *NF copula* captures this where Gaussian copula ($lambda_u = 0$) fails.
+//   + *Results:* SOTA distributional fidelity; $alpha_("GB2") approx 0.16 > alpha_("MSE") approx 0.12$ — physics-informed models scale better.
+// ]
 
 ])
