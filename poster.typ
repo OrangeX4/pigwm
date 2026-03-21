@@ -218,15 +218,15 @@
   *Hypothesis 2:* $X_i tilde "Gamma"(alpha, beta)$ (microscopic marks)
 
   // #v(0.2em)
-  === Empirical Evidence
+  === Evidence for Hypothesis 1
 
-  #figure(caption: [Q-Q plot of latent $ln lambda$ vs.\ standard normal ($R^2 = 0.99942$), validating the lognormal intensity hypothesis.])[
+  #figure(caption: [Q-Q plot of latent $ln lambda$ vs.\ standard normal ($R^2 = 0.99942$)])[
     #image("images/fig3_posterior_qq_plot.png", width: 74%)
   ]
 
   #v(0.2em)
 
-  *Evidence for Hypothesis 2* (Gamma marks): fitting the distribution of individual PGMV marks ($N=893$ single-impression instances):
+  *Evidence for Hypothesis 2* (Gamma marks): fitting the distribution of individual PGMV marks:
 
   #text(size: 23pt)[
     #tlt(
@@ -243,7 +243,7 @@
   === Derived Laws & ZI-GB2 Surrogate
 
   *Traffic* → ZI-Poisson-Lognormal\
-  *Value* → ZI-Tweedie-Lognormal (ZI-TLN, physical ground truth)
+  *Value* → ZI-Tweedie-Lognormal (ZI-TLN)
 
   Since ZI-TLN lacks a closed form, we use *ZI-GB2* as the practical surrogate:
   $ P(y) = (1 - pi) delta(y) + pi dot (a y^(a p - 1)) / (b^(a p) B(p,q) [1 + (y\/b)^a]^(p+q)) $
@@ -264,17 +264,11 @@
 #pop.column-box(heading: "Dependence Modeling: NF Copula")[
   === Perfect Tail Dependence from Physics
 
-  Feedback variables (Cost, GMV) share the *same winning impressions* — a surge in $lambda$ drives both upward simultaneously. This creates asymptotic tail dependence that a Gaussian copula *cannot* model.
-
   *Proposition* (Asymptotic Tail Dependence): Under the axioms and hypotheses,
   $ lim_(u arrow 1^-) P(F_C (C) > u | F_V (V) > u) = 1 $
-  Cost and Value are *perfectly tail-dependent* ($lambda_u = 1$), driven by the shared latent intensity $lambda$.
-
-  A Gaussian copula with any correlation $rho < 1$ gives $lambda_u = 0$ — provably *wrong* for RTB.
+  Cost and Value are *perfectly tail-dependent*.
 
   === Normalizing Flow Copula
-
-  We model the copula via a *Normalizing Flow* with rational quadratic spline transforms, which can represent arbitrary non-Gaussian and asymmetric dependency structures, including $lambda_u = 1$.
 
   #figure(caption: [Conditional tail probability $P(U_("PGMV") > u | U_("PV") > u)$ (where $U = F(dot)$ denotes the probability integral transform) vs.\ tail threshold $(1-u)$. Real data maintains high co-extreme dependence as $u arrow 1$; the NF copula tracks this faithfully, while the Gaussian copula incorrectly decays to independence.])[
     #image("images/fig4_tail_dependence_cond_prob.png", width: 80%)
