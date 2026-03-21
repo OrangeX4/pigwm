@@ -93,13 +93,8 @@
 // ===================== COLUMN 1 =====================
 
 #pop.column-box(heading: "Motivation & Problem")[
-  Existing RTB simulators rely on *log-domain MSE regression*, which is fundamentally ill-posed for auction data:\
-  *①* *Log-MSE biases the mean:* Jensen's inequality gives $EE[log Y] != log EE[Y]$, so log-domain regression systematically underestimates $EE[Y]$.\
-  *②* *Ignores zero-inflation:* A large fraction of auctions yield zero feedback (lost bids). MSE treats these as ordinary small values.\
-  *③* *Ignores extreme heteroscedasticity:* Variance scales as $op("Var")[Y] prop mu^p$ — orders-of-magnitude differences across campaigns that a single MSE loss cannot handle.\
-  *④* *Ignores heavy tails:* RTB feedback exhibits power-law tails; MSE penalises extreme events symmetrically, distorting the fit.\
-  *⑤* *Ignores tail dependence:* Cost and Value share the same winning impressions, so they are strongly coupled in extreme regimes; MSE models each variable independently.\
-  *Our goal:* Estimate the full conditional joint density $P_theta (bold(y)_t | h_t, bold(b)_t, bold(c))$ that respects zero-inflation, heavy tails, and tail dependence — the indispensable simulator for offline RL in computational advertising.
+  Existing RTB simulators rely on *log-domain MSE regression*, which is fundamentally ill-posed for auction data: it biases the mean (Jensen's inequality), ignores zero-inflation, heteroscedasticity, heavy tails, and tail dependence.\
+  *Our goal:* Estimate the full conditional joint density $P_theta (bold(y)_t | h_t, bold(b)_t, bold(c))$ that respects these properties — the indispensable simulator for offline RL in computational advertising.
 ]
 
 #pop.column-box(heading: "Paper Outline")[
@@ -143,40 +138,13 @@
 //   )
 // ]
 
-#pop.column-box(heading: "Key Notation")[
-  #v(16pt)
-  #table(
-    columns: (auto, 1fr),
-    stroke: none,
-    inset: (x: 0.4em, y: 0.3em),
-    align: (right, left),
-    table.hline(stroke: 0.8pt),
-    table.header([*Symbol*], [*Description*]),
-    table.hline(stroke: 0.5pt),
-    [$bold(y)_t$],     [Multi-dimensional feedback vector (clicks, cost, GMV)],
-    [$h_t$],           [Interaction history up to time $t$],
-    [$bold(b)_t$],     [Bidding control vector (action)],
-    [$bold(c)$],       [Static campaign covariates],
-    [$N$],             [Number of winning impressions in a slot],
-    [$X_i$],           [Per-impression value (microscopic mark)],
-    [$Y = sum X_i$],   [Cumulative feedback aggregated over $N$ impressions],
-    [$lambda$],        [Poisson intensity (latent market activity rate)],
-    [$pi$],            [Zero-inflation probability (structural zeros)],
-    [$mu, sigma^2$],   [Mean and variance of $ln lambda$ (lognormal heterogeneity)],
-    [$alpha, beta$],   [Gamma shape and rate parameters of mark $X_i$],
-    [$a,p,q,b$],       [ZI-GB2 distribution shape and scale parameters],
-    [$lambda_u$],      [Upper tail dependence coefficient between Cost and Value],
-    table.hline(stroke: 0.8pt),
-  )
-  #v(24pt)
-]
 
 // ===================== COLUMN 2 =====================
 
 #pop.column-box(heading: "Marginal Modeling")[
   === Why Statistical Model Selection Fails
 
-  In heavy-tail regimes, NLL is dominated by the bulk of the distribution. Multiple families yield *indistinguishably similar NLL* scores ("Flat Minima"), yet imply *wildly different moments* — making data-driven selection unreliable.
+  Heavy-tail distributions with similar NLL imply *wildly different moments* --- making data-driven selection unreliable.
 
   // #v(0.2em)
   // #text(size: 23pt)[
@@ -214,8 +182,13 @@
     *Axiom 4 — Dual Zero-Inflation:*  Structural ($e^(-lambda Delta t)$) + Anomalous gate $G$
   ]
   #v(0.15em)
-  *Hypothesis 1:* $ln lambda tilde cal(N)(mu, sigma^2)$ (multiplicative heterogeneity)\
-  *Hypothesis 2:* $X_i tilde "Gamma"(alpha, beta)$ (microscopic marks)
+  #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
+    *Hypothesis 1:* $ln lambda tilde cal(N)(mu, sigma^2)$ (multiplicative heterogeneity)
+  ]
+  #v(0.06em)
+  #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
+    *Hypothesis 2:* $X_i tilde "Gamma"(alpha, beta)$ (microscopic marks)
+  ]
 
   // #v(0.2em)
   === Evidence for Hypothesis 1
@@ -304,7 +277,7 @@
 
   *Key insights:*
   - *MSE* yields the worst performance across *all* architectures, confirming log-MSE regression is ill-suited for RTB
-  - *ZI-GB2* achieves SOTA distributional fidelity across all metrics (PV CRPS: $14.80 arrow 8.81$, Value CRPS: $3.670 arrow 2.091$)
+  - *ZI-SLN* achieves best fidelity on Click and Cost metrics; *ZI-GB2* leads on PV and Value metrics (PV CRPS: $14.80 arrow 8.81$, Value CRPS: $3.670 arrow 2.091$)
   - Physics-informed loss is *architecture-agnostic*: consistent gains on BFM, Informer, and Transformer backbones
 ]
 
