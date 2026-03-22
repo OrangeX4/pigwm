@@ -66,10 +66,10 @@
   authors: "Chenyang Wu¹ · Tianyu Wang² · Shengjun Fang¹ · Mingjun Cao¹ · Pengfei Liu¹ · Zongzhang Zhang¹ · Yeshu Li² · Zhilin Zhang² · Chuan Yu² · Jian Xu² · Bo Zheng²",
   institutes: "¹Nanjing University       ²Alibaba Group",
   keywords: "Real-Time Bidding · Generative World Models · Physics-Informed Statistical Modeling · Normalizing Flow Copula",
-  text-relative-width: 70%,
+  text-relative-width: 65%,
   spacing: 0pt,
-  title-size: 54pt,
-  subtitle-size: 45pt,
+  title-size: 68pt,
+  subtitle-size: 48pt,
   authors-size: 30pt,
   institutes-size: 29pt,
   keywords-size: 28pt,
@@ -93,7 +93,8 @@
 // ===================== COLUMN 1 =====================
 
 #pop.column-box(heading: "Motivation & Problem")[
-  Existing RTB simulators rely on *log-domain MSE regression*, which is fundamentally ill-posed for auction data: it biases the mean (Jensen's inequality), ignores zero-inflation, heteroscedasticity, heavy tails, and tail dependence.\
+  Existing RTB simulators rely on *log-domain MSE regression*, which is fundamentally ill-posed for auction data: it biases the mean (Jensen's inequality), ignores zero-inflation, heteroscedasticity, heavy tails, and tail dependence.
+
   *Our goal:* Estimate the full conditional joint density $P_theta (bold(y)_t | h_t, bold(b)_t, bold(c))$ that respects these properties — the indispensable simulator for offline RL in computational advertising.
 ]
 
@@ -163,7 +164,7 @@
   // ]
   // #text(size: 22pt)[_NLL gap $< 0.005$ yet variance differs by $30times$._]
 
-  // #v(0.2em)
+  #v(-0.2em)
   === Physics-Informed Approach: Axioms & Hypotheses
 
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
@@ -191,17 +192,29 @@
   ]
 
   // #v(0.2em)
+]
+
+#pop.column-box(heading: "Marginal Modeling")[
   === Evidence for Hypothesis 1
 
-  #figure(caption: [Q-Q plot of latent $ln lambda$ vs.\ standard normal ($R^2 = 0.99942$)])[
-    #image("images/fig3_posterior_qq_plot.png", width: 74%)
-  ]
+  #v(0.4em)
 
-  #v(0.2em)
+  #figure(caption: [Q-Q plot of latent $ln lambda$ vs.\ standard normal ($R^2 = 0.99942$)])[
+    #image("images/fig3_posterior_qq_plot.png", width: 90%)
+  ]
+  #v(0.3em)
+
+  As shown in the Q–Q plot, points lie on the $y = x$ line with $R^2 = 0.99942$, indicating the log-normal latent-intensity model explains nearly all variability. This strong fit disfavors alternatives (e.g., gamma or inverse-Gaussian) and supports a log-normal multiplicative volatility.
+
+  
+
+  #v(0.6em)
 
   *Evidence for Hypothesis 2* (Gamma marks): fitting the distribution of individual PGMV marks:
 
-  #text(size: 23pt)[
+  #v(0.4em)
+
+  #text(size: 28pt)[
     #tlt(
       columns: (1fr, auto, auto, auto),
       table.header[*Model*][*NLL*][*KS Stat*][*AD Stat*],
@@ -210,17 +223,26 @@
       [*Gamma*],     [*$3293.00$*], [*$0.0554$*], [*$3.05$*],
     )
   ]
-  #text(size: 22pt)[_Gamma decisively outperforms alternatives in Anderson-Darling test._]
+  #[_Gamma decisively outperforms alternatives in Anderson-Darling test._]
 
-  // #v(0.2em)
+  #v(0.6em)
   === Derived Laws & ZI-GB2 Surrogate
+  #v(0.4em)
 
   *Traffic* → ZI-Poisson-Lognormal\
   *Value* → ZI-Tweedie-Lognormal (ZI-TLN)
 
   Since ZI-TLN lacks a closed form, we use *ZI-GB2* as the practical surrogate:
+
+  #v(0.3em)
+
   $ P(y) = (1 - pi) delta(y) + pi dot (a y^(a p - 1)) / (b^(a p) B(p,q) [1 + (y\/b)^a]^(p+q)) $
+
+  #v(0.3em)
+
   where $pi$ is the probability of a non-zero outcome (the Bernoulli gate); $delta(y)$ is the Dirac delta; $a > 0$ regulates power-law decay; $b > 0$ is the scale; $p, q > 0$ govern bulk and tail shape; $B(p,q) = Gamma(p)Gamma(q)\/Gamma(p+q)$ is the Beta function.
+
+  #v(.8em)
 
   #text(size: 23pt)[
     #tlt(
@@ -231,6 +253,7 @@
       [*ZI-GB2 (Ours)*], [*$0.047$*], [*$11.5%$*], [*$18.3%$*], [*$36.6%$*],
     )
   ]
+  #v(.63em)
 ]
 
 // ===================== COLUMN 3 =====================
@@ -242,11 +265,17 @@
   $ lim_(u arrow 1^-) P(F_C (C) > u | F_V (V) > u) = 1 $
   where $F_C$ and $F_V$ are the CDFs of Cost $C$ and Value $V$ respectively, and $u$ is the tail threshold. Cost and Value are *perfectly tail-dependent*.
 
+  #v(0.2em)
+
   === Normalizing Flow Copula
 
+  #v(10pt)
+
   #figure(caption: [Conditional tail probability $P(U_("PGMV") > u | U_("PV") > u)$ (where $U = F(dot)$ denotes the probability integral transform) vs.\ tail threshold $(1-u)$. Real data maintains high co-extreme dependence as $u arrow 1$; the NF copula tracks this faithfully, while the Gaussian copula incorrectly decays to independence.])[
-    #image("images/fig4_tail_dependence_cond_prob.png", width: 80%)
+    #image("images/fig4_tail_dependence_cond_prob.png", width: 90%)
   ]
+
+  #v(12pt)
 
   #text(size: 25.3pt)[
     #tlt(
@@ -255,11 +284,13 @@
       [*Test NLL*], [$-1.405$], [$-1.441$], [$-0.540$], [*$-1.909$*],
     )
   ]
-  #text(size: 24.5pt)[_NF copula achieves best NLL and correctly captures tail dependence._]
+  #[_NF copula achieves best NLL and correctly captures tail dependence._]
+
+  #v(7pt)
 ]
 
 #pop.column-box(heading: "Main Results: Distributional Fidelity")[
-  #v(3pt)
+  #v(10pt)
   #text(size: 22pt)[
     #show table.cell.where(y: 0): set text(.7em)
     #tlt(
@@ -274,12 +305,15 @@
       [Trans. (GB2)], [0.706], [0.734], [0.772], [0.603], [0.471], [12.16], [0.733], [3.445],
     )
   ]
-  #v(1pt)
+  #v(15pt)
 
   *Key insights:*
+  
   - *MSE* yields the worst performance across *all* architectures, confirming log-MSE regression is ill-suited for RTB
-  - *ZI-SLN* achieves best fidelity on Click and Cost metrics; *ZI-GB2* leads on PV and Value metrics (PV CRPS: $14.80 arrow 8.81$, Value CRPS: $3.670 arrow 2.091$)
+  - *ZI-GB2* leads on PV and Value metrics (PV CRPS: $14.80 arrow 8.81$, Value CRPS: $3.670 arrow 2.091$)
   - Physics-informed loss is *architecture-agnostic*: consistent gains on BFM, Informer, and Transformer backbones
+
+  #v(8pt)
 ]
 
 // #pop.column-box(heading: "Conclusions")[
