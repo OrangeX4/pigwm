@@ -167,27 +167,27 @@
   === Physics-Informed Approach: Axioms & Hypotheses
 
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
-    *Axiom 1 — Discrete Counting:*  $N tilde "Poisson"(lambda Delta t)$
+    *Axiom 1 — Discrete Counting:*  $N tilde "Poisson"(lambda Delta t)$, where $N$ is the number of winning impressions, $lambda > 0$ is the instantaneous market intensity, and $Delta t$ is the time window duration.
   ]
   #v(0.06em)
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
-    *Axiom 2 — Compound Accumulation:*  $Y = sum_(i=1)^N X_i$
+    *Axiom 2 — Compound Accumulation:*  $Y = sum_(i=1)^N X_i$, where $Y$ is a macroscopic feedback metric (e.g., Cost, PGMV) and $X_i$ is the microscopic mark (e.g., market price or estimated value) of the $i$-th won impression.
   ]
   #v(0.06em)
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
-    *Axiom 3 — Shared Event:*  Cost & Value coupled via shared winning impressions $N$
+    *Axiom 3 — Shared Event:*  Cost $C$ and Value $V$ are coupled via the shared latent intensity $lambda$ through a nested hierarchy: $V = sum_(i=1)^(N_"PV") v_i$ and $C = sum_(j=1)^(N_"clk") c_j$, where $N_"clk" tilde "Binomial"(N_"PV", p_"ctr")$.
   ]
   #v(0.06em)
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
-    *Axiom 4 — Dual Zero-Inflation:*  Structural ($e^(-lambda Delta t)$) + Anomalous gate $G$
+    *Axiom 4 — Dual Zero-Inflation:*  Structural zeros: $P(Y=0|lambda) = e^(-lambda Delta t)$ (no auctions won); Anomalous zeros: gate $G tilde "Bernoulli"(1-epsilon)$, where $epsilon$ is the latent channel failure rate.
   ]
   #v(0.15em)
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
-    *Hypothesis 1:* $ln lambda tilde cal(N)(mu, sigma^2)$ (multiplicative heterogeneity)
+    *Hypothesis 1:* $ln lambda tilde cal(N)(mu, sigma^2)$, where $lambda$ is the market intensity, $mu$ is the log-mean, and $sigma^2$ is the log-variance (multiplicative heterogeneity).
   ]
   #v(0.06em)
   #block(fill: lightbg, inset: 0.35em, radius: 4pt, width: 100%)[
-    *Hypothesis 2:* $X_i tilde "Gamma"(alpha, beta)$ (microscopic marks)
+    *Hypothesis 2:* $X_i tilde "Gamma"(alpha, beta)$, where $X_i$ are individual microscopic marks, $alpha$ is the shape parameter, and $beta$ is the rate parameter.
   ]
 
   // #v(0.2em)
@@ -220,6 +220,7 @@
 
   Since ZI-TLN lacks a closed form, we use *ZI-GB2* as the practical surrogate:
   $ P(y) = (1 - pi) delta(y) + pi dot (a y^(a p - 1)) / (b^(a p) B(p,q) [1 + (y\/b)^a]^(p+q)) $
+  where $pi$ is the probability of a non-zero outcome (the Bernoulli gate); $delta(y)$ is the Dirac delta; $a > 0$ regulates power-law decay; $b > 0$ is the scale; $p, q > 0$ govern bulk and tail shape; $B(p,q) = Gamma(p)Gamma(q)\/Gamma(p+q)$ is the Beta function.
 
   #text(size: 23pt)[
     #tlt(
@@ -239,7 +240,7 @@
 
   *Proposition* (Asymptotic Tail Dependence): Under the axioms and hypotheses,
   $ lim_(u arrow 1^-) P(F_C (C) > u | F_V (V) > u) = 1 $
-  Cost and Value are *perfectly tail-dependent*.
+  where $F_C$ and $F_V$ are the CDFs of Cost $C$ and Value $V$ respectively, and $u$ is the tail threshold. Cost and Value are *perfectly tail-dependent*.
 
   === Normalizing Flow Copula
 
